@@ -1,9 +1,9 @@
 #from collector import *
 
 with open('corpus.txt','r') as fh:
-    corpus = fh.read()[:100]
+    corpus = fh.read()
 
-n = 1
+n = 5
 ngrams = {}
 
 for i in range(0,len(corpus)-n):
@@ -12,4 +12,4 @@ for i in range(0,len(corpus)-n):
     except KeyError:
         ngrams[corpus[i:i+n]] = 1
 
-ngrams = dict(sorted(ngrams.items(), key=lambda t: t[0]))
+ngrams = dict(sorted(ngrams.items(), key=lambda t: t[1], reverse=True))

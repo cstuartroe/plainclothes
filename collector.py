@@ -19,9 +19,16 @@ def unicode_lookup(symbol):
     return soup.title.text
 
 def write_replacements():
-    #sorted_ascii_replacements = str(dict(sorted(ascii_replacements.items(), key=lambda t: t[0])))
+    sorted_ascii_replacements = str(dict(sorted(ascii_replacements.items(), key=lambda t: t[0])))
+    split = sorted_ascii_replacements.split(', ')
+    lines = []
+    for i in range(len(split)//7+1):
+        try:
+            lines.append(', '.join(split[7*i:7*i+7]))
+        except IndexError:
+            lines.append(', '.join(split[7*i:]))
     with open('replacements.py','w',encoding='utf-8') as fh:
-        fh.write('ascii_replacements = ' + ascii_replacements)
+        fh.write('ascii_replacements = ' + ',\n'.join(lines))
 
 def collect():
     start_time = time.time()
