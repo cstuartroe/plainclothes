@@ -18,17 +18,23 @@ def unicode_lookup(symbol):
     soup = bs(document, 'lxml')
     return soup.title.text
 
-def write_replacements():
-    sorted_ascii_replacements = str(dict(sorted(ascii_replacements.items(), key=lambda t: t[0])))
-    split = sorted_ascii_replacements.split(', ')
+def pretty_dict(dictionary, wrap_length):
+    keys = list(dictionary.keys())
     lines = []
-    for i in range(len(split)//7+1):
+    
+    for i in range(len(keys)//wrap_length+1):
         try:
-            lines.append(', '.join(split[7*i:7*i+7]))
+            line = ["%s: %s, " % (repr(key),repr(dictionary[key])) for key in keys[wrap_length*i:wrap_length*i+wrap_length]]
+            lines.append(''.join(line))
         except IndexError:
-            lines.append(', '.join(split[7*i:]))
+            line = ["%s: %s, " % (repr(key),repr(dictionary[key])) for key in keys[wrap_length*i:]]
+            lines.append(''.join(line))
+    return '{' + '\n'.join(lines) + '}'
+
+def write_replacements():
+    sorted_ascii_replacements = dict(sorted(ascii_replacements.items(), key=lambda t: t[0]))
     with open('replacements.py','w',encoding='utf-8') as fh:
-        fh.write('ascii_replacements = ' + ',\n'.join(lines))
+        fh.write('ascii_replacements = ' + pretty_dict(sorted_ascii_replacements,7))
 
 def collect():
     start_time = time.time()
