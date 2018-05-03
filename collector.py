@@ -19,8 +19,9 @@ def unicode_lookup(symbol):
     return soup.title.text
 
 def write_replacements():
+    #sorted_ascii_replacements = str(dict(sorted(ascii_replacements.items(), key=lambda t: t[0])))
     with open('replacements.py','w',encoding='utf-8') as fh:
-        fh.write('ascii_replacements = ' + str(ascii_replacements))
+        fh.write('ascii_replacements = ' + ascii_replacements)
 
 def collect():
     start_time = time.time()
@@ -54,6 +55,7 @@ def collect():
                         ascii_replacements[ch] = replacement   
                     except UnicodeEncodeError:
                         pass
+                    
             write_replacements()
 
     print('Collected %d sources.' % len(articles))
