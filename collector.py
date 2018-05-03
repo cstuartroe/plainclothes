@@ -9,7 +9,7 @@ import lxml
 #from wikiscraper import *
 from replacements import *
 
-included_chs = string.ascii_letters + string.digits + string.punctuation + ' £€¥₹฿₣₱₽₩'
+included_chs = string.ascii_letters + string.digits + string.punctuation + ' '
 
 def unicode_lookup(symbol):
     url = 'http://graphemica.com/' + up.quote(symbol)
@@ -37,7 +37,10 @@ def collect():
             for ch in text:
                 try:
                     newseq = ascii_replacements[ch]
-                    assert(all(newch in included_chs for newch in newseq))
+                    try:
+                        assert(all(newch in included_chs for newch in newseq))
+                    except AssertionError:
+                        raise KeyError
                     corpus += newseq
                 except KeyError:
                     try:
@@ -51,10 +54,6 @@ def collect():
                         ascii_replacements[ch] = replacement   
                     except UnicodeEncodeError:
                         pass
-                except AssertionError:
-                    print(ch)
-                    write_replacements()
-                    raise AssertionError
             write_replacements()
 
     print('Collected %d sources.' % len(articles))
