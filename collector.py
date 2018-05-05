@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup as bs
 import lxml
 
 #from wikiscraper import *
+#from gutenscraper import *
 from replacements import *
 
 included_chs = string.ascii_letters + string.digits + string.punctuation + ' '
@@ -36,17 +37,18 @@ def write_replacements():
     with open('replacements.py','w',encoding='utf-8') as fh:
         fh.write('ascii_replacements = ' + pretty_dict(sorted_ascii_replacements,7))
 
-def collect():
-    start_time = time.time()
+def sources(path):
+    full_path = 'sources/%s/' % path
+    return [full_path + file for file in os.listdir(full_path)]
+
+def collect_group(group):
     corpus = ''
-    folder = 'sources'
-    articles = os.listdir(folder)
+    articles = sources(group)
     
-    for the_file in articles:
-        file_path = os.path.join(folder, the_file)
-        if os.path.isfile(file_path):
-            print('Transferring %s...' % the_file)
-            with open(file_path,'r',encoding='utf-8') as fh:
+    for file in articles:
+        if os.path.isfile(file):
+            print('Transferring %s...' % file)
+            with open(file,'r',encoding='utf-8') as fh:
                 text = fh.read() + ' '
             for ch in text:
                 try:
@@ -71,11 +73,28 @@ def collect():
                     
             write_replacements()
 
+    return {'name':group,'corpus':corpus,'sources':len(articles),'size':len(corpus)}
+
     print('Collected %d sources.' % len(articles))
     print('Corpus has %d characters.' % len(corpus))
+
+def collect_all():
+    start_time = time.time()
+    groups = ['wikipedia','gutenberg']
+    corpora = [collect_group(group) for group in groups]
+    combined_corpus = ' '.join([corpus['corpus'] for corpus in corpora])
+    print()
+    for corpus in corpora:
+        print('Group %s:' % corpus['name'])
+        percent = round(corpus['size']*100/len(combined_corpus))
+        print('\tSize: %d (%d percent)' % (corpus['size'],percent))
+        print('\tNumber of sources: %s' % corpus['sources'])
+
+    print()
+    print('Total corpus size: %d' % len(combined_corpus))
     with open('corpus.txt','w',encoding='utf-8') as fh:
-        fh.write(corpus)
+        fh.write(combined_corpus)
     elapsed = int(time.time() - start_time)
     print('Took %d seconds.' % elapsed)
 
-collect()
+collect_all()

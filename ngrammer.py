@@ -1,5 +1,4 @@
 #from collector import *
-from ngrams import *
 
 def pretty_dict(dictionary, wrap_length):
     keys = list(dictionary.keys())
@@ -17,7 +16,7 @@ def pretty_dict(dictionary, wrap_length):
 with open('corpus.txt','r') as fh:
     corpus = fh.read()
 
-n = 5
+n = 3
 ngrams = {}
 
 for i in range(0,len(corpus)-n):

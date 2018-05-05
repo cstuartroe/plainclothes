@@ -40,17 +40,18 @@ def wikiscrape(article_name):
     text = re.sub(r'\[.*?\]','',text)
     text = text.replace('\n',' ')
     text = text.replace('\xa0',' ')
-    re.sub(' +',' ',text)
+    text = re.sub(' +',' ',text)
 
-    with open('sources/Wikipedia_' + article_name + '.txt','w',encoding='utf-8') as fh:
+    with open('sources/wikipedia/' + article_name + '.txt','w',encoding='utf-8') as fh:
         fh.write(text)
 
     return text
 
-def scrape_all(articles):
+def wikiscrape_all(articles):
     start_time = time.time()
-##    corpus = ''
-    folder = 'sources'
+    folder = 'sources/wikipedia'
+    if not os.path.isdir(folder):
+        os.makedirs(folder)
     for the_file in os.listdir(folder):
         file_path = os.path.join(folder, the_file)
         if os.path.isfile(file_path):
@@ -59,13 +60,9 @@ def scrape_all(articles):
     for article in articles:
         print('Scraping %s...' % article)
         wikiscrape(article)
-##        corpus += text + ' '
 
     print('Scraped %d articles.' % len(articles))
-##    print('Corpus has %d characters.' % len(corpus))
-##    with open('corpus.txt','w',encoding='utf-8') as fh:
-##        fh.write(corpus)
     elapsed = int(time.time() - start_time)
     print('Took %d seconds.' % elapsed)
 
-scrape_all(articles)
+wikiscrape_all(articles)
