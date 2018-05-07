@@ -1,2 +1,5 @@
 __pycache__
 sources
+corpus.txt
+test.txt
+ngrams.py

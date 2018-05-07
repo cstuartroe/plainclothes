@@ -4,14 +4,6 @@ from dicthelper import *
 import math
 from random import randrange
 
-##def model(context):
-##    assert(all(ch in included_chs for ch in context))
-##    grams = [context + ch for ch in included_chs]
-##    counts = [ngrams.get(gram,0) + 1 for gram in grams]
-##    s = sum(counts)
-##    probs = list(map(lambda x: x/s, counts))
-##    return probs
-
 class LanguageModel:
     def __init__(self, gram_counts):
             
@@ -23,17 +15,11 @@ class LanguageModel:
             if len(gram)>1:
                 increment_or_create(self.unique_continuations,gram[:-1])
         self.unique_continuations = sort_by_value(self.unique_continuations)
-
-##        print(self.gram_counts)
-##        print(self.unique_continuations)
-##        print(self.unique_grams)
         
     def model(self, gram, discount):
-##        print(gram)
         n = len(gram)
         if n == 1:
             occurrence = self.gram_counts.get(gram,0)/self.gram_counts['']
-##            print(occurrence)
             return occurrence
             
         else:
@@ -44,8 +30,6 @@ class LanguageModel:
             else:
                 pkn = 0
                 lambdaw = 1
-##            print(pkn)
-##            print(lambdaw)
             prob = pkn + (lambdaw * self.model(gram[1:],discount))
             prob = round(prob,10)
             return prob if prob != 0 else 1e-10
@@ -80,6 +64,7 @@ def model(context):
     assert(round(sum(probs),5) == 1)
     return probs
 
-##with open('test.txt','r') as fh:
-##    test_corpus = fh.read()
-##x = lm.perplexity(test_corpus,6,.75)
+def test_perplexity(gram_size):
+    with open('test.txt','r') as fh:
+        test_corpus = fh.read()
+    return lm.perplexity(test_corpus,gram_size,.75)
