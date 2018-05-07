@@ -1,31 +1,18 @@
 #from collector import *
-
-def pretty_dict(dictionary, wrap_length):
-    keys = list(dictionary.keys())
-    lines = []
-    
-    for i in range(len(keys)//wrap_length+1):
-        try:
-            line = ["%s: %s, " % (repr(key),repr(dictionary[key])) for key in keys[wrap_length*i:wrap_length*i+wrap_length]]
-            lines.append(''.join(line))
-        except IndexError:
-            line = ["%s: %s, " % (repr(key),repr(dictionary[key])) for key in keys[wrap_length*i:]]
-            lines.append(''.join(line))
-    return '{' + '\n'.join(lines) + '}'
+from dicthelper import *  
 
 with open('corpus.txt','r') as fh:
     corpus = fh.read()
 
-n = 3
+max_n = 6
 ngrams = {}
 
-for i in range(0,len(corpus)-n):
-    try:
-        ngrams[corpus[i:i+n]] += 1
-    except KeyError:
-        ngrams[corpus[i:i+n]] = 1
+ngrams[''] = len(corpus)
+for n in range(1,max_n+1):
+    for i in range(0,len(corpus)-n+1):
+        increment_or_create(ngrams,corpus[i:i+n])
 
-ngrams = dict(sorted(ngrams.items(), key=lambda t: t[1], reverse=True))
+ngrams = sort_by_value(ngrams)
 
 with open('ngrams.py','w') as fh:
     fh.write('ngrams = ' + pretty_dict(ngrams,8))

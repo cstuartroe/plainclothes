@@ -4,14 +4,14 @@ class Shantree:
         i = 0
         cum_prob = 0
         total = sum(probs)
-        assert(total <= 1)
+        assert(total <= 1.000001)
         
         if codes:
             self.codes = codes
         else:
             self.codes = ['']*len(probs)
         assert(len(self.codes) == len(probs))
-        
+
         while cum_prob + probs[i]/2 <= total/2:
             cum_prob += probs[i]
             i += 1
@@ -36,7 +36,7 @@ def reverse_perm(permutation):
 class Shancode:
     def __init__(self,probs):
         try:
-            assert(sum(probs) == 1)
+            assert(round(sum(probs),5) == 1)
         except AssertionError:
             raise ValueError('The sum of given probabilities is %f.' % sum(probs))
         

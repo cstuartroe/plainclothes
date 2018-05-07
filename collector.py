@@ -1,16 +1,15 @@
 import os
-import string
 import time
 from urllib import request as ur
 from urllib import parse as up
 from bs4 import BeautifulSoup as bs
+from random import randrange
 import lxml
 
 #from wikiscraper import *
 #from gutenscraper import *
 from replacements import *
-
-included_chs = string.ascii_letters + string.digits + string.punctuation + ' '
+from included import *
 
 def unicode_lookup(symbol):
     url = 'http://graphemica.com/' + up.quote(symbol)
@@ -92,8 +91,24 @@ def collect_all():
 
     print()
     print('Total corpus size: %d' % len(combined_corpus))
+
+    split_index = randrange(990000)
+    test_corpus = ''
+    training_corpus = ''
+    chunks = len(combined_corpus)//1000000
+    for i in range(chunks):
+        training_corpus += combined_corpus[i*1000000:i*1000000+split_index]
+        test_corpus += combined_corpus[i*1000000+split_index:i*1000000+split_index+10000]
+        training_corpus += combined_corpus[i*1000000+split_index+10000:(i+1)*1000000]
+    training_corpus += combined_corpus[(chunks)*1000000:]
+    
     with open('corpus.txt','w',encoding='utf-8') as fh:
-        fh.write(combined_corpus)
+        fh.write(training_corpus)
+    with open('test.txt','w',encoding='utf-8') as fh:
+        fh.write(test_corpus)
+
+    print('Training size: %d' % len(training_corpus))
+    print('Test size: %d' % len(test_corpus))
     elapsed = int(time.time() - start_time)
     print('Took %d seconds.' % elapsed)
 
