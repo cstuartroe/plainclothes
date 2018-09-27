@@ -1,4 +1,4 @@
-#from collector import *
+from collector import *
 from dicthelper import *  
 
 with open('corpus.txt','r') as fh:

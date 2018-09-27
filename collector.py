@@ -6,8 +6,8 @@ from bs4 import BeautifulSoup as bs
 from random import randrange
 import lxml
 
-#from wikiscraper import *
-#from gutenscraper import *
+from wikiscraper import *
+from gutenscraper import *
 from replacements import *
 from included import *
 
