@@ -17,7 +17,7 @@ def collect_sources(reader_name):
     for filepath in filepaths:
         print('Transferring %s...' % filepath)
         with open(filepath,'r') as fh:
-            corpus += fh.read() + ' '
+            corpus += "\n" + fh.read()
     return {'name':reader_name,'corpus':corpus,'sources':len(filepaths),'size':len(corpus)}
 
 def download(reader_names=[]):
@@ -34,7 +34,7 @@ def collect_all():
     for reader_name in all_readers.keys():
         corpora.append(collect_sources(reader_name))
         
-    combined_corpus = ' '.join([corpus['corpus'] for corpus in corpora])
+    combined_corpus = ''.join([corpus['corpus'] for corpus in corpora])
     print()
     for corpus in corpora:
         print('Group %s:' % corpus['name'])

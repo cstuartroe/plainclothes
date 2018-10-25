@@ -6,7 +6,7 @@ import os
 import time
 import string
 
-included_chs = string.ascii_letters + string.digits + string.punctuation + ' '
+included_chs = string.ascii_letters + string.digits + '!"#$%&\'()*+,-./:;<=>?@[\\]^_{|}~ '
 
 replacements_filepath = os.path.join(os.path.dirname(__file__),"replacements")
 

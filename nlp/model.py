@@ -1,27 +1,31 @@
-from ngrams import *
-from included import *
-from dicthelper import *
-
 import math
 from bitstring import BitArray
 from random import random, randrange
 
-class LanguageModel:
-    def __init__(self, gram_counts):
-            
-        self.gram_counts = gram_counts
-        self.unique_grams = {}
+from readers.reader import included_chs
+from . import ngrammer
+
+class NgramModel:
+    charset = included_chs + "`"
+    
+    def __init__(self, gram_size):
+        self.gram_size = gram_size
+        self.gram_counts = {}
+        for n in range(gram_size):
+            self.gram_counts.update(ngrammer.load_ngrams(n+1))
+        self.corpus_length = self.gram_counts["CORPUS_LENGTH"]
+        self.unique_grams = 0
         self.unique_continuations = {}
+        self.bits = 20
         for gram in self.gram_counts.keys():
-            increment_or_create(self.unique_grams,len(gram))
+            self.unique_grams += 1
             if len(gram)>1:
-                increment_or_create(self.unique_continuations,gram[:-1])
-        self.unique_continuations = sort_by_value(self.unique_continuations)
+                self.unique_continuations[gram[:-1]] = self.unique_continuations.get(gram[:-1],0)+1
         
     def prob(self, gram, discount):
         n = len(gram)
         if n == 1:
-            occurrence = self.gram_counts.get(gram,0)/self.gram_counts['']
+            occurrence = self.gram_counts.get(gram,0)/self.corpus_length
             return occurrence
             
         else:
@@ -36,9 +40,9 @@ class LanguageModel:
             return prob
 
     def model(self, context, discount=.75):
-        grams = [context + ch for ch in included_chs]
+        grams = [context + ch for ch in NgramModel.charset]
         probs = [self.prob(gram,discount) for gram in grams]
-        return self.normalize(probs,20)
+        return self.normalize(probs,self.bits)
 
     def normalize(sel,probs,bits):
         probs = [prob + (2**-bits) for prob in probs]
@@ -59,14 +63,14 @@ class LanguageModel:
 
     def suite(self, context, discount):
         suite = {}
-        for letter in included_chs:
+        for letter in NgramModel.charset:
             suite[letter] = self.model(context + letter, discount)
-        return sort_by_value(suite)
+        return suite
 
     def test(self, gram_size, discount):
         for context in self.gram_counts.keys():
             if len(context) == gram_size  - 1:
-                prob_sum = sum([self.model(context + letter, discount) for letter in included_chs])
+                prob_sum = sum([self.model(context + letter, discount) for letter in NgramModel.charset])
                 try:
                     assert(round(prob_sum,5) == 1)
                 except AssertionError:
@@ -79,30 +83,17 @@ class LanguageModel:
             entropy += -math.log2(self.prob(gram, discount))
         return entropy / (len(test_corpus) - gram_size + 1)
 
-lm = LanguageModel(ngrams)
-
-def model(context):
-    return lm.model(context)
-
-def test_perplexity(gram_size):
-    with open('test.txt','r') as fh:
-        test_corpus = fh.read()
-    return lm.perplexity(test_corpus,gram_size,.75)
-
-def generate(seed,l):
-    context = seed
-    out = ''
-    for i in range(l):
-        roll = randrange(2**20)
-        probs = model(context)
-        cum_prob = 0
-        j = -1
-        while cum_prob < roll:
-            j += 1
-            cum_prob += probs[j].uint
-        out += included_chs[j]
-        context = context[1:] + included_chs[j]
-    return out
-
-print(generate('ers. ',1000))
-print(test_perplexity(6))
+    def generate(self,length):
+        context = "`"*self.gram_size
+        out = ''
+        for i in range(length):
+            roll = randrange(2**self.bits)
+            probs = self.model(context)
+            cum_prob = 0
+            j = -1
+            while cum_prob < roll:
+                j += 1
+                cum_prob += probs[j].uint
+            out += NgramModel.charset[j]
+            context = context[1:] + NgramModel.charset[j]
+        return out

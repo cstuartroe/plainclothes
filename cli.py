@@ -1,6 +1,6 @@
 import sys
 from utils import collector
-from nlp import ngrammer
+from nlp import ngrammer, model
 
 def printhelp():
     print("""
@@ -17,7 +17,7 @@ usage: python cli.py <command> [<args>]
     cli.py collect
     - Collects all sources into sources/corpus.txt
 
-    cli.py ngram [ n ]
+    cli.py ngrams [ n ]
     - Computes character ngrams of length up to n.
 
 © 2018 Conor Stuart Roe
@@ -36,7 +36,12 @@ if __name__ == "__main__":
         collector.download(reader_names)
     elif command == "ngrams":
         n = int(sys.argv[2])
-        ngrammer.get_ngrams(n)
+        ngrammer.compute_ngrams(n)
+    elif command == "generate":
+        gram_size = int(sys.argv[2])
+        length = int(sys.argv[3])
+        lm = model.NgramModel(gram_size)
+        print(lm.generate(length))
     elif command == "help":
         printhelp()
     else:
