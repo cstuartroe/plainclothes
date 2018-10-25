@@ -45,7 +45,7 @@ def collect_all():
     print()
     print('Total corpus size: %d' % len(combined_corpus))
 
-    corpus_filepath = os.path.join(os.path.dirname(__file__),"../corpus.txt")
+    corpus_filepath = os.path.join(os.path.dirname(__file__),"../sources/corpus.txt")
     with open(corpus_filepath,'w',encoding='utf-8') as fh:
         fh.write(combined_corpus)
 

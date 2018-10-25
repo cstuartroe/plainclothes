@@ -74,14 +74,12 @@ class Reader:
             return self.read(source)
             
         text = self.get_text(document,source)
-        text = ascii_sub(text)
         text = re.sub('\s+',' ',text)
+        text = ascii_sub(text)
 
         filepath = os.path.join(self.sources_dir,source["name"]+".txt")
         with open(filepath, "w", encoding='utf-8') as fh:
             fh.write(text)
-
-        print("Success")
 
     def read_all(self):
         start_time = time.time()
