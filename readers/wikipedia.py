@@ -1,4 +1,4 @@
-from reader import Reader
+from .reader import Reader
 from urllib import parse as up
 from bs4 import BeautifulSoup as bs
 import re
