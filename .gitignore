@@ -1,5 +1,3 @@
 __pycache__
+venv
 sources
-corpus.txt
-test.txt
-ngrams.py
