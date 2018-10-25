@@ -20,7 +20,7 @@ an NLP developer.
 
 ## Interacting with the CLI:
 
-usage: `python cli.py \<command> [\<args>]`
+usage: `python cli.py <command> [<args>]`
 
 `cli.py download [ gutenberg | wikipedia ]`
 - Downloads pages off the internet and stores them as plain ASCII text in `sources/`.
