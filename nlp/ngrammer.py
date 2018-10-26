@@ -1,14 +1,14 @@
 import os
 
 corpus_filepath = os.path.join(os.path.dirname(__file__),'../sources/corpus.txt')
+with open(corpus_filepath,'r') as fh:
+    corpus = fh.read()
+corpus = corpus.replace("\n","```")
 
-def compute_ngrams(n):    
+def compute_ngrams(n,recursive=False):    
     if n == 0:
         return
-    
-    with open(corpus_filepath,'r') as fh:
-        corpus = fh.read()
-    corpus = corpus.replace("\n","`"*n)
+    print("Computing %dgrams..." % n)
     
     ngrams = {"CORPUS_LENGTH":len(corpus)}
     for i in range(0,len(corpus)-n):
@@ -24,13 +24,20 @@ def compute_ngrams(n):
     with open(os.path.join(ngrams_dir,"%dgrams.txt" % n), "w") as fh:
         fh.write("\n".join(lines))
 
-    compute_ngrams(n-1)
+    if recursive:
+        compute_ngrams(n-1)
 
-def load_ngrams(n):
+def load_ngrams(n):    
     ngrams = {}
     ngrams_dir = os.path.join(os.path.dirname(__file__),'ngrams')
-    with open(os.path.join(ngrams_dir,"%dgrams.txt" % n), "r") as fh:
-        lines = fh.read().split("\n")
+    try:
+        with open(os.path.join(ngrams_dir,"%dgrams.txt" % n), "r") as fh:
+            lines = fh.read().split("\n")
+    except FileNotFoundError:
+        compute_ngrams(n)
+        return load_ngrams(n)
+    
+    print("Loading %dgrams..." % n)
     for line in lines:
         ngram, count = line.split("\t")
         ngrams[ngram] = int(count)

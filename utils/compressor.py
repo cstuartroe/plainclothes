@@ -2,9 +2,7 @@
 from utils.shancode import Shancode
 import .model
 
-lm = NgramModel(6)
-
-def generate_codes(context):
+def generate_codes(lm, context):
     probs = [prob.uint/2**20 for prob in lm.model(context)]
     sc = Shancode(probs)
     codes = sc.codes
@@ -13,15 +11,11 @@ def generate_codes(context):
         d[codes[i]] = included_chs[i]
     return d
 
-def plainclothes(bits):
+def decompressBits(gram_size, bits):
     out = ''
     queue = ''
-    context = 'ers. '
-    try:
-        codes = generate_codes(context)
-    except IndexError:
-        print(context)
-        raise IndexError()
+    context = '`'*gram_size
+    codes = generate_codes(context)
     for bit in bits:
         queue += bit
         ch = codes.get(queue,None)
