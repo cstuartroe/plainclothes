@@ -6,6 +6,9 @@ from . import ngrammer
 
 class LanguageModel:
     charset = included_chs + "`"
+    charsetd = {}
+    for i in range(len(charset)):
+        charsetd[charset[i]] = i
 
     # to override: __init__(self), model(self), update_state(self,char)
     # update_state() updates state by adding a new character
@@ -31,11 +34,8 @@ class LanguageModel:
         return entropy / (len(test_string) - gram_size + 1)
 
     def generate(self,length):
-        starting_context = "`````````` "
         out = ''
-        
-        for char in starting_context:
-            self.put_char(char)
+        self.refresh()
             
         for i in range(length):
             probs = self.get_probs()
@@ -50,6 +50,9 @@ class LanguageModel:
             self.put_char(next_char)
             
         return out
+
+    def refresh(self):
+        self.put_chars("`````````` ")
 
     def get_prob(self,char):
         probs = self.get_probs()
