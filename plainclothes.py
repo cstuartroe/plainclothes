@@ -1,6 +1,7 @@
 import sys
 from utils import collector
-from nlp import ngrammer, model
+from nlp import ngrammer
+from nlp.model import LanguageModel, NgramModel
 
 def printhelp():
     print("""
@@ -50,23 +51,24 @@ if __name__ == "__main__":
     elif command == "generate":
         gram_size = int(sys.argv[2])
         length = int(sys.argv[3])
-        lm = model.NgramModel(gram_size)
+        lm = NgramModel(gram_size)
         print(lm.generate(length))
         
     elif command == "prob":
         ngram = sys.argv[2]
         gram_size = len(ngram)
-        lm = model.NgramModel(gram_size)
-        p = lm.prob(ngram)
+        lm = NgramModel(gram_size)
+        lm.put_chars(ngram[:-1])
+        p = lm.get_prob(ngram[-1])
         print(p)
         
-    elif command == "model":
+    elif command == "project":
         context = sys.argv[2]
-        gram_size = len(context)+1
-        print(context)
-        lm = model.NgramModel(gram_size)
-        ps_list = lm.model(context)
-        with_letters = zip(model.NgramModel.charset,ps_list)
+        gram_size = min(8,len(context)+1)
+        lm = NgramModel(gram_size)
+        lm.put_chars(context)
+        ps_list = lm.get_probs()
+        with_letters = zip(LanguageModel.charset,ps_list)
         ps_list = sorted(with_letters,key = lambda x: x[1], reverse=True)
         for letter, p in ps_list[:10]:
             print(letter, round(p,3))

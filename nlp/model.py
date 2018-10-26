@@ -19,6 +19,10 @@ class LanguageModel:
             raise ValueError("LanguageModel.put_char(char) must be given a single character")
         self.update_state(char)
 
+    def put_chars(self,string):
+        for char in string:
+            self.put_char(char)
+
     def perplexitys(self, test_string, gram_size, discount):
         entropy = 0
         for i in range(len(test_string) - gram_size + 1):
@@ -46,6 +50,10 @@ class LanguageModel:
             self.put_char(next_char)
             
         return out
+
+    def get_prob(self,char):
+        probs = self.get_probs()
+        return probs[LanguageModel.charset.index(char)]
 
     def get_probs(self):
         probs = self.model()
